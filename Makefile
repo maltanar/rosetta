@@ -4,6 +4,8 @@ FREQ_MHZ := 150.0
 VIVADO_MODE := batch # gui
 # which C++ compiler to use
 CC = g++
+# scp/rsync target to copy files to board
+BOARD_URI := xilinx@pynq:~/rosetta
 
 # other project settings
 SBT ?= sbt
@@ -27,7 +29,7 @@ BITFILE_PRJDIR := $(BUILD_DIR)/bitfile_synth
 GEN_BITFILE_PATH := $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).runs/impl_1/procsys_wrapper.bit
 
 # note that all targets are phony targets, no proper dependency tracking
-.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq
+.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync
 
 # generate Verilog for the Chisel accelerator
 hw_verilog:
@@ -53,17 +55,21 @@ launch_vivado_gui: hw_vivadoproj
 bitfile: hw_vivadoproj
 	vivado -mode $(VIVADO_MODE) -source $(VIVADO_SYNTH_SCRIPT) -tclargs $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).xpr
 
-# copy bitfile to the build/pynq folder, make an empty tcl script for bitfile loader
+# copy bitfile to the deployment folder, make an empty tcl script for bitfile loader
 pynq_hw: bitfile
 	mkdir -p $(BUILD_DIR_PYNQ); cp $(GEN_BITFILE_PATH) $(BUILD_DIR_PYNQ)/rosetta.bit; touch $(BUILD_DIR_PYNQ)/rosetta.tcl
 
-# copy all user sources and driver sources to the build/pynq folder
+# copy all user sources and driver sources to the deployment folder
 pynq_sw: hw_driver
 	mkdir -p $(BUILD_DIR_PYNQ); cp $(BUILD_DIR_HWDRV)/* $(BUILD_DIR_PYNQ)/; cp -r $(APP_SRC_DIR)/* $(BUILD_DIR_PYNQ)/
 
-# copy scripts to the build/pynq folder
+# copy scripts to the deployment folder
 pynq_script:
 	cp $(PYNQ_SCRIPT_DIR)/* $(BUILD_DIR_PYNQ)/
 
-# get both HW and SW ready to copy onto the PYNQ
+# get everything ready to copy onto the PYNQ
 pynq: pynq_hw pynq_sw pynq_script
+
+# use rsync to synchronize contents of the deployment folder onto the PYNQ
+rsync:
+	rsync -avz $(BUILD_DIR_PYNQ) $(BOARD_URI)
