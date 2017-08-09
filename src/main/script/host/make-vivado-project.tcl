@@ -13,7 +13,7 @@ set config_freq [lindex $argv 4]
 puts $config_rosetta_verilog
 # fixed for platform
 set config_proj_part "xc7z020clg400-1"
-set xdc_dir "$config_rosetta_root/src/main/script"
+set xdc_dir "$config_rosetta_root/src/main/script/host"
 
 # set up project
 create_project $config_proj_name $config_proj_dir -part $config_proj_part
@@ -47,8 +47,8 @@ create_bd_cell -type module -reference PYNQWrapper PYNQWrapper_0
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/ps7/M_AXI_GP0" Clk "Auto" }  [get_bd_intf_pins PYNQWrapper_0/csr]
 
 # rewire reset port to use active-high
-disconnect_bd_net /rst_ps7_50M_peripheral_aresetn [get_bd_pins PYNQWrapper_0/reset]
-connect_bd_net [get_bd_pins rst_ps7_50M/peripheral_reset] [get_bd_pins PYNQWrapper_0/reset]
+disconnect_bd_net [get_bd_nets rst_ps7*peripheral_aresetn] [get_bd_pins PYNQWrapper_0/reset]
+connect_bd_net [get_bd_pins [get_bd_cells *rst_ps7*]/peripheral_reset] [get_bd_pins PYNQWrapper_0/reset]
 
 # connect accelerator AXI masters to Zynq PS
 #apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/PYNQWrapper_0/mem0" Clk "Auto" }  [get_bd_intf_pins processing_system7_0/S_AXI_HP0]
