@@ -11,7 +11,7 @@ SBT_FLAGS ?= -Dsbt.log.noformat=true
 # internal build dirs and names for the Makefile
 TOP ?= $(shell readlink -f .)
 BUILD_DIR ?= $(TOP)/build
-BUILD_DIR_PYNQ := $(BUILD_DIR)/pynq
+BUILD_DIR_PYNQ := $(BUILD_DIR)/rosetta
 BUILD_DIR_VERILOG := $(BUILD_DIR)/hw/verilog
 BUILD_DIR_HWCPP := $(BUILD_DIR)/hw/cpp_emu
 BUILD_DIR_HWDRV := $(BUILD_DIR)/hw/driver
