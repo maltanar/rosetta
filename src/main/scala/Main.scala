@@ -2,7 +2,6 @@ package rosetta
 
 import Chisel._
 import fpgatidbits.PlatformWrapper.PYNQWrapper
-import fpgatidbits.Testbenches.TestRegOps
 import sys.process._
 
 object Settings {
