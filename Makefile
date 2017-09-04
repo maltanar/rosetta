@@ -73,3 +73,7 @@ pynq: pynq_hw pynq_sw pynq_script
 # use rsync to synchronize contents of the deployment folder onto the PYNQ
 rsync:
 	rsync -avz $(BUILD_DIR_PYNQ) $(BOARD_URI)
+
+# remove everything that is built
+clean:
+	rm -rf $(BUILD_DIR)
