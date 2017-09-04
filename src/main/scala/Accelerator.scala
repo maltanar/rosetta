@@ -1,12 +1,11 @@
 package rosetta
 
 import Chisel._
-import fpgatidbits.PlatformWrapper._
 
 // test for register reads and writes: add two 64-bit values
-class TestRegOps(p: PlatformWrapperParams) extends GenericAccelerator(p) {
+class TestRegOps() extends RosettaAccelerator {
   val numMemPorts = 0
-  val io = new GenericAcceleratorIF(numMemPorts, p) {
+  val io = new RosettaAcceleratorIF(numMemPorts) {
     val op = Vec.fill(2) {UInt(INPUT, width = 64)}
     val sum = UInt(OUTPUT, width = 64)
     val cc = UInt(OUTPUT, width = 32)
@@ -18,4 +17,6 @@ class TestRegOps(p: PlatformWrapperParams) extends GenericAccelerator(p) {
   regCC := regCC + UInt(1)
 
   io.cc := regCC
+
+  io.led := UInt(5)
 }

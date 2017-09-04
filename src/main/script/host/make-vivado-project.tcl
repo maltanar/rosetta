@@ -50,6 +50,17 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/ps7/M_AXI_GP
 disconnect_bd_net [get_bd_nets rst_ps7*peripheral_aresetn] [get_bd_pins PYNQWrapper_0/reset]
 connect_bd_net [get_bd_pins [get_bd_cells *rst_ps7*]/peripheral_reset] [get_bd_pins PYNQWrapper_0/reset]
 
+# create external pins for board-level I/O
+# LEDs
+create_bd_port -dir O -from 3 -to 0 io_led
+connect_bd_net [get_bd_pins /PYNQWrapper_0/io_led] [get_bd_ports io_led]
+# switches
+create_bd_port -dir I -from 1 -to 0 io_sw
+connect_bd_net [get_bd_pins /PYNQWrapper_0/io_sw] [get_bd_ports io_sw]
+# buttons
+create_bd_port -dir I -from 3 -to 0 io_btn
+connect_bd_net [get_bd_pins /PYNQWrapper_0/io_btn] [get_bd_ports io_btn]
+
 # connect accelerator AXI masters to Zynq PS
 #apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/PYNQWrapper_0/mem0" Clk "Auto" }  [get_bd_intf_pins processing_system7_0/S_AXI_HP0]
 #apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/PYNQWrapper_0/mem1" Clk "Auto" }  [get_bd_intf_pins processing_system7_0/S_AXI_HP1]

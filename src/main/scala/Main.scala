@@ -1,20 +1,19 @@
 package rosetta
 
 import Chisel._
-import fpgatidbits.PlatformWrapper.PYNQWrapper
 import sys.process._
 
 object Settings {
   // Rosetta will use myInstFxn to instantiate your accelerator
   // edit below to change which accelerator will be instantiated
-  val myInstFxn = {p => new TestRegOps(p)}
+  val myInstFxn = {() => new TestRegOps()}
 }
 
 // call this object's main method to generate Chisel Verilog and C++ emulation
 // output products. all cmdline arguments are passed straight to Chisel.
 object ChiselMain {
   def main(args: Array[String]): Unit = {
-    chiselMain(args, () => Module(new PYNQWrapper(Settings.myInstFxn)))
+    chiselMain(args, () => Module(new RosettaWrapper(Settings.myInstFxn)))
   }
 }
 
@@ -37,7 +36,7 @@ object DriverMain {
     val outDir = args(0)
     val drvSrcDir = args(1)
     // instantiate the wrapper accelerator
-    val myModule = Module(new PYNQWrapper(Settings.myInstFxn))
+    val myModule = Module(new RosettaWrapper(Settings.myInstFxn))
     // generate the register driver
     myModule.generateRegDriver(outDir)
     // copy additional driver files
