@@ -26,6 +26,11 @@ class TestRegOps() extends RosettaAccelerator {
   // expose counter through the output called cc
   io.cc := regCC
 
+  // turn on colored lights when switches are activated
+  io.led4(0) := io.sw(0)
+  io.led5(1) := io.sw(0)
+  io.led4(1) := io.sw(1)
+  io.led5(2) := io.sw(1)
   // in addition to the signals we defined here, there are some signals that
   // are always present in the io bundle, as we derive from RosettaAcceleratorIF
 
