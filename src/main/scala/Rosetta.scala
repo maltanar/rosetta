@@ -100,11 +100,12 @@ abstract class RosettaAccelerator() extends Module {
 // and other components that bridge the accelerator to the rest of the PYNQ
 class RosettaWrapper(instFxn: () => RosettaAccelerator) extends Module {
   val p = PYNQParams
+  val numPYNQMemPorts: Int = 4
   val io = new Bundle {
     // AXI slave interface for control-status registers
     val csr = new AXILiteSlaveIF(p.memAddrBits, p.csrDataBits)
     // AXI master interfaces for reading and writing memory
-    val mem = Vec.fill (p.numMemPorts) {
+    val mem = Vec.fill (numPYNQMemPorts) {
       new AXIMasterIF(p.memAddrBits, p.memDataBits, p.memIDBits)
     }
     // user LEDs LD3..0
@@ -233,7 +234,7 @@ class RosettaWrapper(instFxn: () => RosettaAccelerator) extends Module {
   // ==========================================================================
   // rename signals to support Vivado interface inference
   io.csr.renameSignals("csr")
-  for(i <- 0 until p.numMemPorts) {io.mem(i).renameSignals(s"mem$i")}
+  for(i <- 0 until numPYNQMemPorts) {io.mem(i).renameSignals(s"mem$i")}
 
   // connections to board I/O
   accel.io.sw := io.sw
@@ -282,7 +283,7 @@ class RosettaWrapper(instFxn: () => RosettaAccelerator) extends Module {
 
   // the accelerator may be using fewer memory ports than what the platform
   // exposes; plug the unused ones
-  for(i <- accel.numMemPorts until p.numMemPorts) {
+  for(i <- accel.numMemPorts until numPYNQMemPorts) {
     println("Plugging unused memory port " + i.toString)
     io.mem(i).driveDefaults()
   }
