@@ -6,7 +6,8 @@ import sys.process._
 object Settings {
   // Rosetta will use myInstFxn to instantiate your accelerator
   // edit below to change which accelerator will be instantiated
-  val myInstFxn = {() => new TestRegOps()}
+  //val myInstFxn = {() => new TestRegOps()}
+  val myInstFxn = {() => new TestAccumulateVector(4)}
 }
 
 // call this object's main method to generate Chisel Verilog and C++ emulation
