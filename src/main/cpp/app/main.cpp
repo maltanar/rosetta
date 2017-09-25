@@ -2,6 +2,45 @@
 using namespace std;
 #include "platform.h"
 
+// uncomment this block for the BRAMExample
+#include "BRAMExample.hpp"
+void Run_BRAMExample(WrapperRegDriver * platform) {
+  BRAMExample t(platform);
+
+  cout << "Signature: " << hex << t.get_signature() << dec << endl;
+  while(1) {
+    char cmd;
+    cout << "Commands: (w)rite, (r)ead, (q)uit" << endl;
+    cin >> cmd;
+    switch (cmd) {
+      case 'q':
+        return;
+      case 'w':
+        unsigned int waddr, wdata;
+        cout << "Enter write address: " << endl;
+        cin >> waddr;
+        t.set_write_addr(waddr);
+        cout << "Enter write data: " << endl;
+        cin >> wdata;
+        t.set_write_data(wdata);
+        // pulse the write enable to complete the write
+        t.set_write_enable(1);
+        t.set_write_enable(0);
+        break;
+      case 'r':
+        unsigned int raddr;
+        cout << "Enter read address: " << endl;
+        cin >> raddr;
+        t.set_read_addr(raddr);
+        cout << "Read data: " << t.get_read_data();
+        break;
+      default:
+        cout << "Unrecognized command" << endl;
+    }
+  }
+}
+
+/*
 // uncomment this block for the TestAccumulateVector example
 #include "TestAccumulateVector.hpp"
 void Run_TestAccumulateVector(WrapperRegDriver * platform) {
@@ -31,6 +70,7 @@ void Run_TestAccumulateVector(WrapperRegDriver * platform) {
 
   cout << "Result: " << result << " expected: " << expected_acc << endl;
 }
+*/
 
 /*
 // uncomment this block for the TestRegOps example
@@ -57,7 +97,8 @@ int main()
   WrapperRegDriver * platform = initPlatform();
 
   //Run_TestRegOps(platform);
-  Run_TestAccumulateVector(platform);
+  //Run_TestAccumulateVector(platform);
+  Run_BRAMExample(platform);
 
   deinitPlatform(platform);
 
