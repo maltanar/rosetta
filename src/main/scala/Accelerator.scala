@@ -40,3 +40,4 @@ class TestRegOps() extends RosettaAccelerator {
   // use the buttons to control the LEDs
   io.led := io.btn
 }
+

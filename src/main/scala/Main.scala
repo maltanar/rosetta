@@ -6,14 +6,19 @@ import sys.process._
 object Settings {
   // Rosetta will use myInstFxn to instantiate your accelerator
   // edit below to change which accelerator will be instantiated
-  val myInstFxn = {() => new TestRegOps()}
+    val myInstFxn = {() => new TestRegOps()}
 }
 
 // call this object's main method to generate Chisel Verilog and C++ emulation
 // output products. all cmdline arguments are passed straight to Chisel.
 object ChiselMain {
   def main(args: Array[String]): Unit = {
-    chiselMain(args, () => Module(new RosettaWrapper(Settings.myInstFxn)))
+    //chiselMain(args, () => Module(new RosettaWrapper(Settings.myInstFxn)))
+    //chiselMainTest(args, () => Module(new Max(4, 8))){c => new MaxTests(c)}
+    //chiselMainTest(args, () => Module(new Sum(9,8))){c => new SumTests(c)}
+    //chiselMainTest(args, () => Module(new Mux2())){c => new Mux2Tests(c)}
+    chiselMainTest(args, () => Module(new Comparator(8))){c => new ComparatorTest(c)}
+
   }
 }
 
