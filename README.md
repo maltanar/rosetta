@@ -1,5 +1,7 @@
 # Rosetta
-Rosetta is a project template to rapidly deploy Vivado HLS accelerators on the Xilinx PYNQ platform. It uses the PlatformWrapper components from the fpga-tidbits framework for easy memory mapped register file management.
+Rosetta is a project template to rapidly deploy Chisel and Vivado HLS accelerators on the Xilinx PYNQ platform. It uses the PlatformWrapper components from the fpga-tidbits framework for easy memory mapped register file management.
+
+For Chisel accelerators, use the master branch. For Vivado HLS accelerators, use the hls branch.
 
 ## Requirements
 1. Xilinx Vivado 2016.4 and Vivado HLS (make sure vivado and vivado_hls are in PATH)
