@@ -6,14 +6,14 @@ VIVADO_MODE := batch # gui
 # which C++ compiler to use
 CC = g++
 # scp/rsync target to copy files to board
-BOARD_URI := xilinx@pynq:~/rosetta
+BOARD_URI := xilinx@pynqmalt:~/rosetta
 
 # other project settings
 SBT ?= sbt
 SBT_FLAGS ?= -Dsbt.log.noformat=true
 # internal build dirs and names for the Makefile
 TOP ?= $(shell readlink -f .)
-HLS_SRC_DIR := $(TOP)/src/main/hls
+HLS_SRC_DIR := $(TOP)/src/main/cpp/hls
 BUILD_DIR ?= $(TOP)/build
 BUILD_DIR_PYNQ := $(BUILD_DIR)/rosetta
 BUILD_DIR_HWDRV := $(BUILD_DIR)/hw/driver
