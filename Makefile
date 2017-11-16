@@ -16,8 +16,10 @@ TOP ?= $(shell readlink -f .)
 HLS_SRC_DIR := $(TOP)/src/main/hls
 BUILD_DIR ?= $(TOP)/build
 BUILD_DIR_PYNQ := $(BUILD_DIR)/rosetta
+BUILD_DIR_HWDRV := $(BUILD_DIR)/hw/driver
 HLS_PROJ := hls
 HLS_IP_DIR := $(BUILD_DIR)/hls/sol1/impl/ip
+HLS_DRV := $(HLS_IP_DIR)/drivers/BlackBoxJam_v1_0/src/xblackboxjam_hw.h
 DRV_SRC_DIR := $(TOP)/src/main/cpp/regdriver
 APP_SRC_DIR := $(TOP)/src/main/cpp/app
 VIVADO_PROJ_SCRIPT := $(TOP)/src/main/script/host/make-vivado-project.tcl
@@ -37,6 +39,10 @@ $(BUILD_DIR):
 # run Vivado HLS synthesis
 hls: $(BUILD_DIR)
 	cd $(BUILD_DIR); vivado_hls -f $(HLS_SYNTH_SCRIPT) -tclargs $(HLS_PROJ) $(HLS_SRC_DIR) $(PERIOD_NS)
+
+# set up register driver sources
+hw_driver:
+	mkdir -p "$(BUILD_DIR_HWDRV)"; cp $(HLS_DRV) $(BUILD_DIR_HWDRV); cp $(DRV_SRC_DIR)/* $(BUILD_DIR_HWDRV)/
 
 # create a new Vivado project
 hw_vivadoproj: hls
