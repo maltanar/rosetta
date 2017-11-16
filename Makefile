@@ -16,7 +16,8 @@ TOP ?= $(shell readlink -f .)
 HLS_SRC_DIR := $(TOP)/src/main/hls
 BUILD_DIR ?= $(TOP)/build
 BUILD_DIR_PYNQ := $(BUILD_DIR)/rosetta
-HLS_PROJ := $(BUILD_DIR)/hls
+HLS_PROJ := hls
+HLS_IP_DIR := $(BUILD_DIR)/hls/sol1/impl/ip
 DRV_SRC_DIR := $(TOP)/src/main/cpp/regdriver
 APP_SRC_DIR := $(TOP)/src/main/cpp/app
 VIVADO_PROJ_SCRIPT := $(TOP)/src/main/script/host/make-vivado-project.tcl
@@ -30,13 +31,16 @@ GEN_BITFILE_PATH := $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).runs/impl_1/procsys_wra
 # note that all targets are phony targets, no proper dependency tracking
 .PHONY: hls hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync
 
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
 # run Vivado HLS synthesis
-hls:
-  vivado_hls -f HLS_SYNTH_SCRIPT -tclargs HLS_PROJ HLS_SRC_DIR PERIOD_NS
+hls: $(BUILD_DIR)
+	cd $(BUILD_DIR); vivado_hls -f $(HLS_SYNTH_SCRIPT) -tclargs $(HLS_PROJ) $(HLS_SRC_DIR) $(PERIOD_NS)
 
 # create a new Vivado project
 hw_vivadoproj: hls
-	vivado -mode $(VIVADO_MODE) -source $(VIVADO_PROJ_SCRIPT) -tclargs $(TOP) $(HW_VERILOG) $(BITFILE_PRJNAME) $(BITFILE_PRJDIR) $(FREQ_MHZ)
+	vivado -mode $(VIVADO_MODE) -source $(VIVADO_PROJ_SCRIPT) -tclargs $(TOP) $(HLS_IP_DIR) $(BITFILE_PRJNAME) $(BITFILE_PRJDIR) $(FREQ_MHZ)
 
 # launch Vivado in GUI mode with created project
 launch_vivado_gui: 

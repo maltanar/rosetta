@@ -10,8 +10,9 @@ set config_toplevelfxn "BlackBoxJam"
 set config_proj_part "xc7z020clg400-1"
 
 # set up project
+set cppfiles [glob $config_hwsrcdir/*.cpp]
 open_project $config_proj_name
-add_files $config_hwsrcdir/*.cpp -cflags "-std=c++0x"
+add_files $cppfiles -cflags "-std=c++0x"
 set_top $config_toplevelfxn
 open_solution sol1
 set_part $config_proj_part
