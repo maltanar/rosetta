@@ -1,5 +1,6 @@
 # target frequency for Vivado FPGA synthesis
-FREQ_MHZ := 150.0
+FREQ_MHZ := 100.0
+PERIOD_NS := 10
 # controls whether Vivado will run in command-line or GUI mode
 VIVADO_MODE := batch # gui
 # which C++ compiler to use
@@ -12,40 +13,40 @@ SBT ?= sbt
 SBT_FLAGS ?= -Dsbt.log.noformat=true
 # internal build dirs and names for the Makefile
 TOP ?= $(shell readlink -f .)
+HLS_SRC_DIR := $(TOP)/src/main/hls
 BUILD_DIR ?= $(TOP)/build
 BUILD_DIR_PYNQ := $(BUILD_DIR)/rosetta
-BUILD_DIR_VERILOG := $(BUILD_DIR)/hw/verilog
-BUILD_DIR_HWCPP := $(BUILD_DIR)/hw/cpp_emu
 BUILD_DIR_HWDRV := $(BUILD_DIR)/hw/driver
-BUILD_DIR_EMULIB_CPP := $(BUILD_DIR)/hw/cpp_emulib
+HLS_PROJ := hls
+HLS_IP_DIR := $(BUILD_DIR)/hls/sol1/impl/ip
+HLS_DRV := $(HLS_IP_DIR)/drivers/BlackBoxJam_v1_0/src/xblackboxjam_hw.h
 DRV_SRC_DIR := $(TOP)/src/main/cpp/regdriver
 APP_SRC_DIR := $(TOP)/src/main/cpp/app
 VIVADO_PROJ_SCRIPT := $(TOP)/src/main/script/host/make-vivado-project.tcl
 VIVADO_SYNTH_SCRIPT := $(TOP)/src/main/script/host/synth-vivado-project.tcl
+HLS_SYNTH_SCRIPT := $(TOP)/src/main/script/host/hls-syn.tcl
 PYNQ_SCRIPT_DIR := $(TOP)/src/main/script/pynq
-HW_VERILOG := $(BUILD_DIR_VERILOG)/PYNQWrapper.v
 BITFILE_PRJNAME := bitfile_synth
 BITFILE_PRJDIR := $(BUILD_DIR)/bitfile_synth
 GEN_BITFILE_PATH := $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).runs/impl_1/procsys_wrapper.bit
 
 # note that all targets are phony targets, no proper dependency tracking
-.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync
+.PHONY: hls hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync
 
-# generate Verilog for the Chisel accelerator
-hw_verilog:
-	$(SBT) $(SBT_FLAGS) "runMain rosetta.ChiselMain --backend v --targetDir $(BUILD_DIR_VERILOG)"
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-# generate cycle-accurate C++ emulator sources for the Chisel accelerator
-hw_cpp:
-	$(SBT) $(SBT_FLAGS) "runMain rosetta.ChiselMain --backend c --targetDir $(BUILD_DIR_HWCPP)"
+# run Vivado HLS synthesis
+hls: $(BUILD_DIR)
+	cd $(BUILD_DIR); vivado_hls -f $(HLS_SYNTH_SCRIPT) -tclargs $(HLS_PROJ) $(HLS_SRC_DIR) $(PERIOD_NS)
 
-# generate register driver for the Chisel accelerator
+# set up register driver sources
 hw_driver:
-	mkdir -p "$(BUILD_DIR_HWDRV)"; $(SBT) $(SBT_FLAGS) "runMain rosetta.DriverMain $(BUILD_DIR_HWDRV) $(DRV_SRC_DIR)"
+	mkdir -p "$(BUILD_DIR_HWDRV)"; cp $(HLS_DRV) $(BUILD_DIR_HWDRV); cp $(DRV_SRC_DIR)/* $(BUILD_DIR_HWDRV)/
 
 # create a new Vivado project
-hw_vivadoproj: hw_verilog
-	vivado -mode $(VIVADO_MODE) -source $(VIVADO_PROJ_SCRIPT) -tclargs $(TOP) $(HW_VERILOG) $(BITFILE_PRJNAME) $(BITFILE_PRJDIR) $(FREQ_MHZ)
+hw_vivadoproj: hls
+	vivado -mode $(VIVADO_MODE) -source $(VIVADO_PROJ_SCRIPT) -tclargs $(TOP) $(HLS_IP_DIR) $(BITFILE_PRJNAME) $(BITFILE_PRJDIR) $(FREQ_MHZ)
 
 # launch Vivado in GUI mode with created project
 launch_vivado_gui: 
