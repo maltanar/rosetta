@@ -114,12 +114,12 @@ public:
   }
 
   // (mandatory) register access methods for the platform wrapper
-  virtual void writeReg32(unsigned int regInd, AccelReg regValue) {
-    m_reg[regInd] = regValue;
+  virtual void writeReg32(unsigned int regOffs, AccelReg regValue) {
+    m_reg[regOffs/4] = regValue;
   }
 
-  virtual AccelReg readReg32(unsigned int regInd) {
-    return m_reg[regInd];
+  virtual AccelReg readReg32(unsigned int regOffs) {
+    return m_reg[regOffs/4];
   }
 
 private:

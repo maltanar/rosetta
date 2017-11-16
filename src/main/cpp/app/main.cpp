@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
   try {
-    theDriver = initPlatform();
+    WrapperRegDriver * theDriver = initPlatform();
 
     unsigned int numToSum = 0;
     cout << "Enter number of integers to generate and sum: " << endl;

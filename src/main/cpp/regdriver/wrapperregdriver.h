@@ -22,18 +22,18 @@ public:
   virtual void detach() {}
 
   // (mandatory) register access methods for the platform wrapper
-  virtual void writeReg32(unsigned int regInd, AccelReg regValue) = 0;
-  virtual AccelReg readReg32(unsigned int regInd) = 0;
+  virtual void writeReg32(unsigned int regOffs, AccelReg regValue) = 0;
+  virtual AccelReg readReg32(unsigned int regOffs) = 0;
   
-  virtual void writeReg64(unsigned int regInd, AccelDblReg regValue) {
-    writeReg32(regInd, (AccelReg)(regValue & 0x00000000ffffffff));
-    writeReg32(regInd+1, (AccelReg)((regValue >> 32) & 0x00000000ffffffff));
+  virtual void writeReg64(unsigned int regOffs, AccelDblReg regValue) {
+    writeReg32(regOffs, (AccelReg)(regValue & 0x00000000ffffffff));
+    writeReg32(regOffs+4, (AccelReg)((regValue >> 32) & 0x00000000ffffffff));
   };
   
-  virtual AccelDblReg readReg64(unsigned int regInd) {
+  virtual AccelDblReg readReg64(unsigned int regOffs) {
     AccelDblReg res = 0;
-    res = readReg32(regInd);
-    res |= ((AccelDblReg) readReg32(regInd+1)) << 32;
+    res = readReg32(regOffs);
+    res |= ((AccelDblReg) readReg32(regOffs+4)) << 32;
   };
 
 };
