@@ -29,7 +29,11 @@ BITFILE_PRJDIR := $(BUILD_DIR)/bitfile_synth
 GEN_BITFILE_PATH := $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).runs/impl_1/procsys_wrapper.bit
 
 # note that all targets are phony targets, no proper dependency tracking
-.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync
+.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync test
+
+# run Scala/Chisel tests
+test:
+	$(SBT) $(SBT_FLAGS) "test"
 
 # generate Verilog for the Chisel accelerator
 hw_verilog:
@@ -48,7 +52,7 @@ hw_vivadoproj: hw_verilog
 	vivado -mode $(VIVADO_MODE) -source $(VIVADO_PROJ_SCRIPT) -tclargs $(TOP) $(HW_VERILOG) $(BITFILE_PRJNAME) $(BITFILE_PRJDIR) $(FREQ_MHZ)
 
 # launch Vivado in GUI mode with created project
-launch_vivado_gui: 
+launch_vivado_gui:
 	vivado -mode gui $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).xpr
 
 # run bitfile synthesis for the Vivado project
