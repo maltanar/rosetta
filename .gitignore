@@ -1,4 +1,3 @@
-*.jou
 build/
 ### Project Specific stuff
 test_run_dir/*
