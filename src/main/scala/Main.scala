@@ -20,6 +20,18 @@ object ChiselMain {
   }
 }
 
+// call this object's Main to generate Verilog and characterize it in terms of
+// the hardware resources required (LUT, DSP, BRAM...) and achievable Fmax
+// note: the characterization flow requires the following to be installed:
+// https://bitbucket.org/maltanar/oh-my-xilinx
+object CharacterizeMain {
+  def main(args: Array[String]): Unit = {
+    val instFxn = () => Module(new RosettaWrapper(Settings.myInstFxn))
+    val ret = VivadoSynth.characterize(instFxn)
+    ret.printSummary()
+  }
+}
+
 // call this object's main method to generate the register driver for your
 // accelerator. expects the following command line arguments, in order:
 // 1. path to output directory for generated files

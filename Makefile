@@ -13,11 +13,13 @@ SBT_FLAGS ?= -Dsbt.log.noformat=true
 # internal build dirs and names for the Makefile
 TOP ?= $(shell readlink -f .)
 BUILD_DIR ?= $(TOP)/build
+BUILD_DIR_CHARACTERIZE := $(BUILD_DIR)/characterize
 BUILD_DIR_PYNQ := $(BUILD_DIR)/rosetta
 BUILD_DIR_VERILOG := $(BUILD_DIR)/hw/verilog
 BUILD_DIR_HWCPP := $(BUILD_DIR)/hw/cpp_emu
 BUILD_DIR_HWDRV := $(BUILD_DIR)/hw/driver
 BUILD_DIR_EMULIB_CPP := $(BUILD_DIR)/hw/cpp_emulib
+VERILOG_SRC_DIR := $(TOP)/src/main/verilog
 DRV_SRC_DIR := $(TOP)/src/main/cpp/regdriver
 APP_SRC_DIR := $(TOP)/src/main/cpp/app
 VIVADO_PROJ_SCRIPT := $(TOP)/src/main/script/host/make-vivado-project.tcl
@@ -31,9 +33,9 @@ GEN_BITFILE_PATH := $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).runs/impl_1/procsys_wra
 # note that all targets are phony targets, no proper dependency tracking
 .PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync test
 
-# run Scala/Chisel tests
-test:
-	$(SBT) $(SBT_FLAGS) "test"
+# run CharacterizeMain for resource/Fmax characterization
+characterize:
+	mkdir -p "$(BUILD_DIR_CHARACTERIZE)"; cp $(VERILOG_SRC_DIR)/*.v $(BUILD_DIR_CHARACTERIZE); $(SBT) $(SBT_FLAGS) "runMain rosetta.CharacterizeMain"
 
 # generate Verilog for the Chisel accelerator
 hw_verilog:
