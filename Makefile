@@ -29,12 +29,18 @@ HW_VERILOG := $(BUILD_DIR_VERILOG)/PYNQWrapper.v
 BITFILE_PRJNAME := bitfile_synth
 BITFILE_PRJDIR := $(BUILD_DIR)/bitfile_synth
 GEN_BITFILE_PATH := $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).runs/impl_1/procsys_wrapper.bit
+VIVADO_IN_PATH := $(shell command -v vivado 2> /dev/null)
 
 # note that all targets are phony targets, no proper dependency tracking
-.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync test
+.PHONY: hw_verilog hw_cpp hw_driver hw_vivadoproj bitfile pynq_hw pynq_sw pynq rsync test characterize check_vivado
+
+check_vivado:
+ifndef VIVADO_IN_PATH
+    $(error "vivado not found in path")
+endif
 
 # run CharacterizeMain for resource/Fmax characterization
-characterize:
+characterize: check_vivado
 	mkdir -p "$(BUILD_DIR_CHARACTERIZE)"; cp $(VERILOG_SRC_DIR)/*.v $(BUILD_DIR_CHARACTERIZE); $(SBT) $(SBT_FLAGS) "runMain rosetta.CharacterizeMain"
 
 # generate Verilog for the Chisel accelerator
@@ -50,11 +56,11 @@ hw_driver:
 	mkdir -p "$(BUILD_DIR_HWDRV)"; $(SBT) $(SBT_FLAGS) "runMain rosetta.DriverMain $(BUILD_DIR_HWDRV) $(DRV_SRC_DIR)"
 
 # create a new Vivado project
-hw_vivadoproj: hw_verilog
+hw_vivadoproj: hw_verilog check_vivado
 	vivado -mode $(VIVADO_MODE) -source $(VIVADO_PROJ_SCRIPT) -tclargs $(TOP) $(HW_VERILOG) $(BITFILE_PRJNAME) $(BITFILE_PRJDIR) $(FREQ_MHZ)
 
 # launch Vivado in GUI mode with created project
-launch_vivado_gui:
+launch_vivado_gui: check_vivado
 	vivado -mode gui $(BITFILE_PRJDIR)/$(BITFILE_PRJNAME).xpr
 
 # run bitfile synthesis for the Vivado project
