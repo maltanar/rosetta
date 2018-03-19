@@ -2,6 +2,68 @@
 using namespace std;
 #include "platform.h"
 
+// uncomment this block for the MemCpy example
+#include "MemCpyExample.hpp"
+void Run_MemCpyExample(WrapperRegDriver * platform) {
+  MemCpyExample t(platform);
+
+  cout << "Signature: " << hex << t.get_signature() << dec << endl;
+  unsigned int ub = 0;
+  // why divisible by 16? fpgatidbits DMA components may not work if the
+  // number of bytes is not divisible by 64. since we are using 4-byte words,
+  // 16*4=64 ensures divisibility.
+  cout << "Enter upper bound of sum sequence, divisible by 16: " << endl;
+  cin >> ub;
+  if(ub % 16 != 0) {
+    cout << "Error: Upper bound must be divisible by 16" << endl;
+    return;
+  }
+
+  unsigned int * hostSrcBuf = new unsigned int[ub];
+  unsigned int * hostDstBuf = new unsigned int[ub];
+  unsigned int bufsize = ub * sizeof(unsigned int);
+
+  for(unsigned int i = 0; i < ub; i++) { hostSrcBuf[i] = i+1; }
+
+  void * accelSrcBuf = platform->allocAccelBuffer(bufsize);
+  void * accelDstBuf = platform->allocAccelBuffer(bufsize);
+  platform->copyBufferHostToAccel(hostSrcBuf, accelSrcBuf, bufsize);
+
+  t.set_srcAddr((AccelDblReg) accelSrcBuf);
+  t.set_destAddr((AccelDblReg) accelDstBuf);
+  t.set_byteCount(bufsize);
+
+  t.set_start(1);
+
+  while(t.get_finished() != 1);
+
+  platform->copyBufferAccelToHost(accelDstBuf, hostDstBuf, bufsize);
+
+  platform->deallocAccelBuffer(accelSrcBuf);
+  platform->deallocAccelBuffer(accelDstBuf);
+
+  int words = 0;
+  bool success = true;
+  for(unsigned int i = 0; i < ub; i++) {
+    if (hostSrcBuf[i] != hostDstBuf[i]) {
+      words = i;
+      success = false;
+      break;
+    }
+  }
+  if (success) words = ub;
+
+  if (success) {
+    cout << words << " words copied successfully!" << endl;
+  } else {
+    cout << "Error at word: " << words << endl;
+  }
+  unsigned int cc = t.get_cycleCount();
+  cout << "#cycles = " << cc << " cycles per word = " << (float)cc/(float)ub << endl;
+  t.set_start(0);
+}
+
+/*
 // uncomment this block for the DRAMExample
 #include "DRAMExample.hpp"
 void Run_DRAMExample(WrapperRegDriver * platform) {
@@ -44,6 +106,7 @@ void Run_DRAMExample(WrapperRegDriver * platform) {
   cout << "#cycles = " << cc << " cycles per word = " << (float)cc/(float)ub << endl;
   t.set_start(0);
 }
+*/
 
 /*
 // uncomment this block for the BRAMExample
@@ -144,7 +207,8 @@ int main()
   //Run_TestRegOps(platform);
   //Run_TestAccumulateVector(platform);
   //Run_BRAMExample(platform);
-  Run_DRAMExample(platform);
+  //Run_DRAMExample(platform);
+  Run_MemCpyExample(platform);
 
   deinitPlatform(platform);
 
