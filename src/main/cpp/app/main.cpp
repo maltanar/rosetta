@@ -96,6 +96,8 @@ void Run_MemCpyExample(WrapperRegDriver * platform) {
     }
   }
   if (success) words = ub;
+  delete [] hostSrcBuf;
+  delete [] hostDstBuf;
 
   if (success) {
     cout << words << " words copied successfully!" << endl;
