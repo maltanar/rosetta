@@ -9,8 +9,8 @@ object Settings {
   //val myInstFxn = {() => new TestRegOps()}
   //val myInstFxn = {() => new TestAccumulateVector(4)}
   //val myInstFxn = {() => new BRAMExample(1024)}
-  //val myInstFxn = {() => new DRAMExample()}
-  val myInstFxn = {() => new MemCpyExample()}
+  //val myInstFxn = {() => new MemCpyExample()}
+  val myInstFxn = {() => new DRAMExample()}
 }
 
 // call this object's main method to generate Chisel Verilog and C++ emulation
