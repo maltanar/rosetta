@@ -35,10 +35,10 @@ import scala.collection.mutable.LinkedHashMap
 class RosettaAcceleratorIF(numMemPorts: Int) extends Bundle {
   // memory ports to access DRAM. you can use components from fpgatidbits.dma to
   // read and write data through these
-  val memPort = Vec.fill(numMemPorts) {new GenericMemoryMasterPort(PYNQParams.toMemReqParams())}
+  val memPort = Vec.fill(numMemPorts) {new GenericMemoryMasterPort(PYNQZ1Params.toMemReqParams())}
   // use the signature field for sanity and version checks. auto-generated each
   // time the accelerator verilog is regenerated.
-  val signature = UInt(OUTPUT, PYNQParams.csrDataBits)
+  val signature = UInt(OUTPUT, PYNQZ1Params.csrDataBits)
   // user LEDs LD3..0
   val led = UInt(OUTPUT, 4)
   // user switches SW1 and SW0
@@ -99,7 +99,7 @@ abstract class RosettaAccelerator() extends Module {
 // the wrapper, which contains the instantiated accelerator, register file,
 // and other components that bridge the accelerator to the rest of the PYNQ
 class RosettaWrapper(instFxn: () => RosettaAccelerator) extends Module {
-  val p = PYNQParams
+  val p = PYNQZ1Params
   val numPYNQMemPorts: Int = 4
   val io = new Bundle {
     // AXI slave interface for control-status registers
