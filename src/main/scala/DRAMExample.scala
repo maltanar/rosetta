@@ -24,7 +24,7 @@ class DRAMExample() extends RosettaAccelerator {
   val rdP = new StreamReaderParams(
     streamWidth = 32, /* read a stream of 32 bits */
     fifoElems = 8,    /* add a stream FIFO of 8 elements */
-    mem = PYNQParams.toMemReqParams(),  /* PYNQ memory request parameters */
+    mem = PYNQZ1Params.toMemReqParams(),  /* PYNQ memory request parameters */
     maxBeats = 1, /* do not use bursts (set to e.g. 8 for better DRAM bandwidth)*/
     chanID = 0, /* stream ID for distinguishing between returned responses */
     disableThrottle = true  /* disable throttling */
