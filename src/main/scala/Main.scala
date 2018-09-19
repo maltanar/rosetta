@@ -9,6 +9,7 @@ object Settings {
   //val myInstFxn = {() => new TestRegOps()}
   //val myInstFxn = {() => new TestAccumulateVector(4)}
   //val myInstFxn = {() => new BRAMExample(1024)}
+  //val myInstFxn = {() => new MemCpyExample()}
   val myInstFxn = {() => new DRAMExample()}
 }
 
