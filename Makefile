@@ -69,7 +69,7 @@ bitfile: hw_vivadoproj
 
 # copy bitfile to the deployment folder, make an empty tcl script for bitfile loader
 pynq_hw: bitfile
-	mkdir -p $(BUILD_DIR_PYNQ); cp $(GEN_BITFILE_PATH) $(BUILD_DIR_PYNQ)/rosetta.bit; touch $(BUILD_DIR_PYNQ)/rosetta.tcl
+	mkdir -p $(BUILD_DIR_PYNQ); cp $(GEN_BITFILE_PATH) $(BUILD_DIR_PYNQ)/rosetta.bit; cp $(BITFILE_PRJDIR)/rosetta.tcl $(BUILD_DIR_PYNQ)/
 
 # copy all user sources and driver sources to the deployment folder
 pynq_sw: hw_driver

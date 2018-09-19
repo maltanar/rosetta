@@ -89,6 +89,8 @@ connect_bd_net [get_bd_pins /PYNQWrapper_0/io_led5_r] [get_bd_ports led5_r]
 regenerate_bd_layout
 validate_bd_design
 save_bd_design
+# write block design tcl
+write_bd_tcl $config_proj_dir/rosetta.tcl
 
 # use global mode (no out-of-context) for bd synthesis
 #set_property synth_checkpoint_mode None [get_files $config_proj_dir/$config_proj_name.srcs/sources_1/bd/procsys/procsys.bd]
